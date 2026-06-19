@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temple Platform — Cash Surface</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#191527;--brass:#c8972f;--brass-lt:#e6c873;--brass-deep:#a87c1f;--ivory:#f6f1e6;--card:#fffdf8;--line:#e8dfca;--line2:#efe8d6;--text:#221d14;--muted:#8a8270;--muted2:#b3aa95;--shadow:0 1px 2px rgba(30,22,8,.05),0 8px 28px rgba(30,22,8,.07)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--ivory);color:var(--text);line-height:1.5;padding:0 0 56px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px}
+  header{background:var(--ink);color:#f3ecdc;padding:28px 0 24px;border-bottom:3px solid var(--brass)}
+  header .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  .brandmark{display:flex;align-items:center;gap:14px}
+  .lamp{width:32px;height:32px;flex:none}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:23px;letter-spacing:-.01em;line-height:1.05;color:#fdfaf2}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-lt);margin-bottom:6px}
+  .sub{color:#bdb4a2;font-size:13px;max-width:380px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-top:26px;padding:20px 22px 24px}
+  .slider{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .slider .lab{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;min-width:170px}
+  .slider input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--brass) 0 var(--fill,30%),var(--line) var(--fill,30%) 100%);outline:none}
+  .slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--card);border:2.5px solid var(--brass);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+  .slider input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--card);border:2.5px solid var(--brass);cursor:pointer}
+  .slider .out{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;min-width:74px;text-align:right;color:#2a2418}
+  .ctl{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;margin:16px 0 18px}
+  .ctl .lab{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-right:9px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fbf7ec}
+  .seg button{border:none;border-radius:0;padding:7px 12px;font-size:12.5px;font-family:'Inter',sans-serif;background:transparent;color:var(--muted);cursor:pointer;transition:.12s}
+  .seg button[aria-pressed="true"]{background:var(--brass);color:#fff;font-weight:500}
+  .ovh{font-family:'JetBrains Mono',monospace;width:120px;font-size:12.5px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fbf7ec;color:var(--text)}
+  .legrow{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--muted);margin-bottom:12px}
+  .legrow .sw{display:flex;gap:3px}
+  .legrow .sw span{width:16px;height:13px;border-radius:2px}
+  .rng{margin-left:auto;font-family:'JetBrains Mono',monospace;color:#6a604b}
+  .axl{font-size:11px;color:var(--muted);display:flex;align-items:center;justify-content:center}
+  .cell{display:flex;align-items:center;justify-content:center;height:40px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;font-family:'JetBrains Mono',monospace}
+  .cell:hover{outline:2px solid var(--ink);outline-offset:-2px}
+  .cell.sel{outline:3px solid var(--brass);outline-offset:-2px}
+  .rd{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:20px}
+  @media(max-width:560px){.rd{grid-template-columns:repeat(2,1fr)}}
+  .rdc{background:#fbf7ec;border:1px solid var(--line2);border-radius:9px;padding:10px 12px}
+  .rdc .k{font-size:11px;color:var(--muted)}
+  .rdc .v{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin-top:3px;color:#2a2418}
+  .inv{margin:2px 0 16px;padding:14px;border:1px solid var(--line2);border-radius:11px;background:#fcf9f1}
+  .inv .glabel{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass-deep);margin-bottom:12px;display:flex;justify-content:space-between}
+  .inv .glabel .tot{color:#2a2418;font-weight:700}
+  .invgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:560px){.invgrid{grid-template-columns:repeat(2,1fr)}}
+  .invgrid label{display:block;font-size:11px;color:#5a5240;margin-bottom:5px;font-weight:600}
+  .invgrid input{font-family:'JetBrains Mono',monospace;width:100%;font-size:12.5px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text)}
+  .chart{margin-top:22px;padding-top:18px;border-top:1px solid var(--line2)}
+  .chart .ct{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:#2a2418;margin-bottom:4px}
+  .chart .stat{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .chart .stat b{color:#2a2418;font-weight:600}
+  #tip{position:fixed;pointer-events:none;z-index:50;display:none;background:var(--ink);color:#f3ecdc;border:1px solid var(--brass-deep);border-radius:10px;padding:11px 13px;min-width:218px;box-shadow:0 10px 30px rgba(25,21,39,.35);font-family:'JetBrains Mono',monospace}
+  #tip .th{font-family:'Inter',sans-serif;font-weight:600;font-size:12.5px;color:#fff;margin-bottom:8px}
+  #tip .cap{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass-lt);margin:8px 0 3px}
+  #tip .tr{display:flex;justify-content:space-between;gap:18px;font-size:11.5px;padding:2px 0;color:#cdc4b2}
+  #tip .tr .a{color:#f3ecdc}
+  #tip .div{border-top:1px solid #3a3357;margin:6px 0}
+  #tip .tot{font-size:12.5px;color:#fff;font-weight:700}
+  footer{margin-top:24px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.6}
+  footer b{color:#6a604b;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brandmark">
+      <svg class="lamp" viewBox="0 0 40 40" fill="none">
+        <path d="M20 5c2.6 1.8 4 3.6 4 5.8 0 2.1-1.8 3.4-4 3.4s-4-1.3-4-3.4c0-2.2 1.4-4 4-5.8Z" fill="#e6c873"/>
+        <path d="M7 17h26l-3.2 9.5a6 6 0 0 1-5.7 4.1H15.9a6 6 0 0 1-5.7-4.1L7 17Z" fill="#c8972f"/>
+        <path d="M7 17h26" stroke="#191527" stroke-width="1.4"/>
+        <path d="M20 30.6V35M14 35h12" stroke="#e6c873" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><div class="eyebrow">Cash after operating costs</div><h1>Cash Surface · Temples × Visitors</h1></div>
+    </div>
+    <p class="sub">Set the subscription per temple and your one-time build investment. Hover a cell for its cost breakdown; click a cell to plot how long it takes to pay back.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="slider"><span class="lab">Subscription / temple / mo</span><input type="range" id="sub" min="0" max="5000" step="100" value="1500"><span class="out" id="sub-out">₹1,500</span></div>
+    <div class="slider"><span class="lab">% of temples paying</span><input type="range" id="pay" min="0" max="100" step="5" value="100"><span class="out" id="pay-out">100%</span></div>
+
+    <div class="ctl">
+      <span><span class="lab">Show</span><span class="seg" id="seg-metric"><button data-v="total" aria-pressed="true">Total cash</button><button data-v="per" aria-pressed="false">Per temple</button></span></span>
+      <span><span class="lab">Video</span><span class="seg" id="seg-video"><button data-v="youtube" aria-pressed="true">Embed</button><button data-v="selfvideo" aria-pressed="false">Self-host</button></span></span>
+      <span><span class="lab">Database</span><span class="seg" id="seg-db"><button data-v="always_on" aria-pressed="true">Always-on</button><button data-v="stz" aria-pressed="false">Scale-to-zero</button></span></span>
+      <span><span class="lab">Images</span><span class="seg" id="seg-img"><button data-v="cloudflare" aria-pressed="true">Cloudflare</button><button data-v="awscf" aria-pressed="false">CloudFront</button></span></span>
+      <span><span class="lab">Receipts</span><span class="seg" id="seg-rcpt"><button data-v="email" aria-pressed="true">Email</button><button data-v="whatsapp" aria-pressed="false">WhatsApp</button><button data-v="sms" aria-pressed="false">SMS</button></span></span>
+      <span><span class="lab">Other overheads ₹/mo</span><input type="number" id="ovh" class="ovh" value="0" step="50000"></span>
+    </div>
+
+    <div class="inv">
+      <div class="glabel"><span>Initial investment · one-time build</span><span class="tot" id="inv-total">₹10,00,000</span></div>
+      <div class="invgrid">
+        <div><label>Design</label><input type="number" id="inv-design" value="50000" step="25000"></div>
+        <div><label>Development</label><input type="number" id="inv-dev" value="250000" step="25000"></div>
+        <div><label>Testing</label><input type="number" id="inv-test" value="50000" step="25000"></div>
+        <div><label>Deployment</label><input type="number" id="inv-deploy" value="50000" step="25000"></div>
+      </div>
+    </div>
+
+    <div class="legrow"><span>loss</span><span class="sw" id="legend"></span><span>profit</span><span class="rng" id="rangenote"></span></div>
+
+    <div style="display:flex;gap:8px">
+      <div class="axl" style="writing-mode:vertical-rl;transform:rotate(180deg);width:16px;flex:none">visitors per temple / month</div>
+      <div style="flex:1">
+        <div id="grid"></div>
+        <div class="axl" style="margin-top:7px">number of temples</div>
+      </div>
+    </div>
+
+    <div class="rd" id="readout"></div>
+
+    <div class="chart">
+      <div class="ct" id="chart-title">Break-even — 500 temples · 500 visitors</div>
+      <div style="font-size:11.5px;color:var(--muted2);margin-bottom:8px"><i>Click any cell above to plot its payback here.</i></div>
+      <div class="stat" id="chart-stat"></div>
+      <div id="chart"></div>
+    </div>
+  </div>
+
+  <footer>
+    Revenue = subscription × temples × % paying. Operating cost uses the same model as the estimator (GST included).<br>
+    “Other overheads” lets you layer in team & marketing; at ₹0 the surface is cash after tech costs only. <b>Operating cash before income tax — estimates only.</b>
+  </footer>
+</div>
+
+<div id="tip"></div>
+
+<script>
+const TEMPLES=[50,100,250,500,1000,2000,3500,5000];
+const VISITS=[5000,3500,2000,1000,500,250,100];
+const NEG=['#FCEBEB','#F7C1C1','#F09595','#E24B4A','#A32D2D'];
+const POS=['#E1F5EE','#9FE1CB','#5DCAA5','#1D9E75','#0F6E56'];
+const IMG={cloudflare:{e:0,s:1.3,b:0},awscf:{e:8,s:2,b:0}};
+const RCPT={email:0.02,whatsapp:0.35,sms:0.20};
+const F={ppv:3,conv:.15,ppp:1.3,qdbpv:3,wpt:4,capcu:600,replcu:.5,activef:.5,cbase:6000,cper:7000,kbtemple:1024,kbtxn:2,histmult:1.2,imgst:.5,cuh:12,gbmo:30,misc:3000,pageMB:1.2,months:12,minCU:.5,maxCU:8,replicas:0};
+let metric='total',video='youtube',db='always_on',image='cloudflare',rcpt='email';
+const sub=()=>+document.getElementById('sub').value, pay=()=>+document.getElementById('pay').value/100, ovh=()=>+document.getElementById('ovh').value||0;
+const invD=()=>+document.getElementById('inv-design').value||0, invV=()=>+document.getElementById('inv-dev').value||0, invT=()=>+document.getElementById('inv-test').value||0, invP=()=>+document.getElementById('inv-deploy').value||0;
+const invTotal=()=>invD()+invV()+invT()+invP();
+let selected={t:500,v:500};
+
+function breakdown(t,v){
+  const views=t*v*F.ppv, bw=views*F.pageMB/1024, txns=t*v*F.conv*F.ppp;
+  const app=F.cbase+(views/1e6)*F.cper;
+  const q=views*F.qdbpv+txns*F.wpt+t*30, avgQPS=q/(730*3600), demandCU=avgQPS/F.capcu*1.3;
+  let billedCU,cuH;
+  if(db==='always_on'){billedCU=Math.min(F.maxCU,Math.max(F.minCU,demandCU));cuH=billedCU*730;}
+  else{billedCU=Math.min(F.maxCU,Math.max(0.25,demandCU));cuH=billedCU*730*F.activef;}
+  const dbCompute=(cuH+F.replicas*F.replcu*730)*F.cuh;
+  const dbStorage=((t*F.kbtemple+txns*F.months*F.kbtxn)/1e6*F.histmult)*F.gbmo;
+  const im=IMG[image], imgCost=im.b+bw*im.e+t*F.imgst*im.s;
+  let vid=0; if(video==='selfvideo'){vid=(t*v*1.5*9/1024)*8+(t*60*9/1024)*2;}
+  const messaging=txns*RCPT[rcpt]+(rcpt==='sms'?t*5*0.20:0);
+  const lines=[['App hosting',app],['Database compute',dbCompute],['Database storage',dbStorage],['Images & CDN',imgCost],['Video',vid],['Receipts',messaging],['Monitoring & fixed',F.misc]];
+  const subt=app+dbCompute+dbStorage+imgCost+vid+messaging+F.misc, gst=subt*0.18;
+  return {lines,subt,gst,opcost:subt+gst};
+}
+const cash=(t,v)=> sub()*t*pay() - breakdown(t,v).opcost - ovh();
+const val=(t,v)=> metric==='total'?cash(t,v):cash(t,v)/t;
+const fcs=n=>{const a=Math.abs(n);const s=a>=100000?'₹'+(a/100000).toFixed(1)+'L':a>=1000?'₹'+Math.round(a/1000)+'k':'₹'+Math.round(a);return (n<0?'-':'')+s;};
+const fIN=n=>(n<0?'-':'')+'₹'+Math.round(Math.abs(n)).toLocaleString('en-IN');
+
+function color(x,maxL,maxP){
+  if(x<0){const i=Math.min(4,Math.floor(Math.min(1,Math.abs(x)/(maxL||1))*5));return [NEG[i],i>=3?'#FCEBEB':'#501313'];}
+  const i=Math.min(4,Math.floor(Math.min(1,x/(maxP||1))*5));return [POS[i],i>=3?'#E1F5EE':'#04342C'];
+}
+function render(){
+  let maxL=0,maxP=0;
+  for(const t of TEMPLES)for(const v of VISITS){const x=val(t,v);if(x<0)maxL=Math.max(maxL,-x);else maxP=Math.max(maxP,x);}
+  const g=document.getElementById('grid');
+  g.style.display='grid';g.style.gridTemplateColumns='48px repeat('+TEMPLES.length+',1fr)';g.style.gap='4px';
+  let h='<div></div>';
+  for(const t of TEMPLES) h+='<div class="axl" style="height:20px">'+(t>=1000?(t/1000)+'k':t)+'</div>';
+  for(const v of VISITS){
+    h+='<div class="axl">'+(v>=1000?(v/1000)+'k':v)+'</div>';
+    for(const t of TEMPLES){const x=val(t,v),[bg,fg]=color(x,maxL,maxP);
+      h+='<div class="cell" data-t="'+t+'" data-v="'+v+'" style="background:'+bg+';color:'+fg+'">'+fcs(x)+'</div>';}
+  }
+  g.innerHTML=h;
+  document.getElementById('legend').innerHTML=[...NEG].reverse().concat(POS).map(c=>'<span style="background:'+c+'"></span>').join('');
+  document.getElementById('rangenote').textContent='break-even at the red/green edge';
+  [...g.querySelectorAll('.cell')].forEach(c=>{
+    const t=+c.dataset.t,v=+c.dataset.v;
+    c.onmouseenter=e=>tip(t,v,e);
+    c.onmousemove=e=>moveTip(e);
+    c.onmouseleave=()=>{document.getElementById('tip').style.display='none';};
+    c.onclick=()=>{g.querySelectorAll('.cell.sel').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');show(t,v);};
+  });
+  const selCell=g.querySelector('.cell[data-t="'+selected.t+'"][data-v="'+selected.v+'"]');
+  if(selCell) selCell.classList.add('sel');
+}
+function tip(t,v,e){
+  const b=breakdown(t,v), rev=sub()*t*pay(), c=rev-b.opcost-ovh();
+  let rows=b.lines.map(([k,a])=>'<div class="tr"><span>'+k+'</span><span class="a">'+fIN(a)+'</span></div>').join('');
+  const el=document.getElementById('tip');
+  el.innerHTML='<div class="th">'+t.toLocaleString('en-IN')+' temples · '+v.toLocaleString('en-IN')+' visitors</div>'
+    +'<div class="cap">Operating cost</div>'+rows
+    +'<div class="tr"><span>GST 18%</span><span class="a">'+fIN(b.gst)+'</span></div>'
+    +(ovh()>0?'<div class="tr"><span>Other overheads</span><span class="a">'+fIN(ovh())+'</span></div>':'')
+    +'<div class="tr tot"><span>Total op cost</span><span class="a">'+fIN(b.opcost+ovh())+'</span></div>'
+    +'<div class="div"></div>'
+    +'<div class="tr"><span>Revenue</span><span class="a">'+fIN(rev)+'</span></div>'
+    +'<div class="tr tot"><span>Cash remaining</span><span class="a" style="color:'+(c<0?'#F09595':'#9FE1CB')+'">'+fIN(c)+'</span></div>';
+  el.style.display='block';
+  moveTip(e);
+}
+function moveTip(e){
+  const el=document.getElementById('tip');
+  const w=el.offsetWidth||230,h=el.offsetHeight||240;
+  let x=e.clientX+14,y=e.clientY+14;
+  if(x+w>window.innerWidth-10) x=e.clientX-w-14;
+  if(y+h>window.innerHeight-10) y=window.innerHeight-h-10;
+  el.style.left=x+'px';el.style.top=y+'px';
+}
+const fcomp=n=>{const a=Math.abs(n);const s=a>=10000000?'₹'+(a/10000000).toFixed(1)+'Cr':a>=100000?'₹'+(a/100000).toFixed(1)+'L':a>=1000?'₹'+Math.round(a/1000)+'k':'₹'+Math.round(a);return (n<0?'-':'')+s;};
+
+function drawBE(t,v){
+  const I=invTotal(), mc=cash(t,v), be= mc>0 ? I/mc : Infinity;
+  const N = mc>0 ? Math.min(72, Math.max(18, Math.ceil(be)+6)) : 36;
+  const W=760,H=280,ml=70,mr=16,mt=16,mb=40,pw=W-ml-mr,ph=H-mt-mb;
+  const cum=m=>-I+mc*m;
+  let yMin=Math.min(-I,cum(N)), yMax=Math.max(0,cum(N));
+  if(yMax<=0) yMax=Math.max(I*0.12,1);
+  const padv=(yMax-yMin)*0.07; yMin-=padv; yMax+=padv;
+  const X=m=>ml+(m/N)*pw, Y=val=>mt+(1-(val-yMin)/(yMax-yMin))*ph, y0=Y(0);
+  let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" font-family="Inter,sans-serif" role="img" aria-label="Cumulative cash from launch showing break-even point">';
+  if(mc>0){
+    s+='<polygon points="'+X(0)+','+y0+' '+X(0)+','+Y(cum(0))+' '+X(Math.min(be,N))+','+y0+'" fill="#F7C1C1" opacity="0.55"/>';
+    if(be<N) s+='<polygon points="'+X(be)+','+y0+' '+X(N)+','+Y(cum(N))+' '+X(N)+','+y0+'" fill="#9FE1CB" opacity="0.6"/>';
+  } else {
+    s+='<polygon points="'+X(0)+','+y0+' '+X(0)+','+Y(cum(0))+' '+X(N)+','+Y(cum(N))+' '+X(N)+','+y0+'" fill="#F7C1C1" opacity="0.5"/>';
+  }
+  s+='<line x1="'+ml+'" y1="'+y0+'" x2="'+(W-mr)+'" y2="'+y0+'" stroke="#b3aa95" stroke-dasharray="4 4"/>';
+  s+='<line x1="'+ml+'" y1="'+mt+'" x2="'+ml+'" y2="'+(mt+ph)+'" stroke="#e8dfca"/>';
+  s+='<line x1="'+ml+'" y1="'+(mt+ph)+'" x2="'+(W-mr)+'" y2="'+(mt+ph)+'" stroke="#e8dfca"/>';
+  let pts=[];for(let m=0;m<=N;m++)pts.push(X(m).toFixed(1)+','+Y(cum(m)).toFixed(1));
+  s+='<polyline points="'+pts.join(' ')+'" fill="none" stroke="#c8972f" stroke-width="2.5"/>';
+  if(mc>0 && be<=N){
+    s+='<line x1="'+X(be)+'" y1="'+mt+'" x2="'+X(be)+'" y2="'+(mt+ph)+'" stroke="#1d9e75" stroke-dasharray="3 3"/>';
+    s+='<circle cx="'+X(be)+'" cy="'+y0+'" r="4.5" fill="#0f6e56"/>';
+    s+='<text x="'+(X(be)+6)+'" y="'+(mt+14)+'" font-size="12" fill="#0f6e56" font-weight="500">break-even · month '+Math.ceil(be)+'</text>';
+  }
+  [yMax,0,yMin].forEach(val=>{s+='<text x="'+(ml-8)+'" y="'+(Y(val)+4)+'" font-size="11" fill="#8a8270" text-anchor="end">'+fcomp(val)+'</text>';});
+  const step=Math.max(1,Math.round(N/6));
+  for(let m=0;m<=N;m+=step) s+='<text x="'+X(m)+'" y="'+(mt+ph+18)+'" font-size="11" fill="#8a8270" text-anchor="middle">'+m+'</text>';
+  s+='<text x="'+(ml+pw/2)+'" y="'+(H-4)+'" font-size="11" fill="#8a8270" text-anchor="middle">months from launch</text></svg>';
+  document.getElementById('chart').innerHTML=s;
+  document.getElementById('chart-title').textContent='Break-even — '+t.toLocaleString('en-IN')+' temples · '+v.toLocaleString('en-IN')+' visitors';
+  document.getElementById('chart-stat').innerHTML = mc>0
+    ? 'Investment <b>'+fIN(I)+'</b> · monthly cash <b>'+fIN(mc)+'</b> · pays back in <b>month '+Math.ceil(be)+'</b> (~'+(be/12).toFixed(1)+' yr)'
+    : 'Investment <b>'+fIN(I)+'</b> · monthly cash <b>'+fIN(mc)+'</b> · <b style="color:#a32d2d">does not break even at this cell</b>';
+}
+
+function show(t,v){selected={t:t,v:v};const b=breakdown(t,v),rev=sub()*t*pay(),c=rev-b.opcost-ovh();
+  document.getElementById('readout').innerHTML=[['Temples',t.toLocaleString('en-IN')],['Visitors/temple',v.toLocaleString('en-IN')],['Revenue/mo',fIN(rev)],['Op cost/mo',fIN(b.opcost+ovh())],['Cash left/mo',fIN(c)]]
+    .map(([k,val])=>'<div class="rdc"><div class="k">'+k+'</div><div class="v">'+val+'</div></div>').join('');
+  drawBE(t,v);
+}
+function wire(id,set){const el=document.getElementById(id);el.querySelectorAll('button').forEach(b=>b.onclick=()=>{el.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');set(b.dataset.v);render();show(selected.t,selected.v);});}
+wire('seg-metric',v=>metric=v);wire('seg-video',v=>video=v);wire('seg-db',v=>db=v);wire('seg-img',v=>image=v);wire('seg-rcpt',v=>rcpt=v);
+function fill(id){const s=document.getElementById(id);s.style.setProperty('--fill',((s.value-s.min)/(s.max-s.min)*100)+'%');}
+document.getElementById('sub').oninput=e=>{document.getElementById('sub-out').textContent='₹'+(+e.target.value).toLocaleString('en-IN');fill('sub');render();show(selected.t,selected.v);};
+document.getElementById('pay').oninput=e=>{document.getElementById('pay-out').textContent=e.target.value+'%';fill('pay');render();show(selected.t,selected.v);};
+document.getElementById('ovh').oninput=()=>{render();show(selected.t,selected.v);};
+function updInv(){document.getElementById('inv-total').textContent='₹'+invTotal().toLocaleString('en-IN');show(selected.t,selected.v);}
+['inv-design','inv-dev','inv-test','inv-deploy'].forEach(id=>document.getElementById(id).oninput=updInv);
+fill('sub');fill('pay');render();updInv();show(500,500);
+</script>
+</body>
+</html>
